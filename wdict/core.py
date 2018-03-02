@@ -41,6 +41,16 @@ class Dict(OrderedDict):
         new_dict += other
         return new_dict
 
+    def __radd__(self, other: [dict, 'Dict']):
+        if other == 0 and isinstance(other, int):
+            return copy.deepcopy(self)
+        elif isinstance(other, dict):
+            return self + Dict(other)
+        elif isinstance(other, Dict):
+            return self + other
+        else:
+            raise TypeError
+
     def __iadd__(self, other: [dict, 'Dict']):
 
         logger = getLogger(__name__)

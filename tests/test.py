@@ -4,6 +4,15 @@ from logging import basicConfig, DEBUG
 basicConfig(level=DEBUG)
 
 
+def test_sum():
+    a = dict({"a": 1})
+    b = dict({"a": 2, "b": 2})
+    c = sum([a, b])
+    assert c["a"] == [1, 2]
+    assert c["b"] == 2
+    assert c.a == [1, 2]
+    assert c.b == 2
+
 def test_int_int():
     a = dict({"a": 1})
     b = dict({"a": 2, "b": 2})
@@ -154,4 +163,3 @@ def test_str_int_list_update():
     assert d["b"]["c"]["d"] == 1
     assert d.a == ["str 0", 8, 9, 0]
     assert d.b.c.d == 1
-
