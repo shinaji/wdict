@@ -14,6 +14,7 @@
 import numpy as np
 import copy
 import traceback
+from itertools import repeat
 from collections import OrderedDict
 from logging import getLogger
 
@@ -35,6 +36,12 @@ class Dict(OrderedDict):
             else:
                 ret += f'"{key}": {self[key]}, '
         return ("{" + ret[:-2] + "}").replace("'", '"')
+
+    def __mul__(self, other: int):
+        if isinstance(other, int):
+            return repeat(copy.deepcopy(self), other)
+        else:
+            raise TypeError
 
     def __add__(self, other: [dict, 'Dict']):
         new_dict = copy.deepcopy(self)

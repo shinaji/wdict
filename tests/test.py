@@ -3,6 +3,14 @@ import numpy as np
 from logging import basicConfig, DEBUG
 basicConfig(level=DEBUG)
 
+def test_mul():
+    a = dict({"a": 1})
+    b = list(a * 2)
+    assert b[0]["a"] == 1
+    assert b[0].a == 1
+    assert b[1]["a"] == 1
+    assert b[1].a == 1
+
 
 def test_sum():
     a = dict({"a": 1})
