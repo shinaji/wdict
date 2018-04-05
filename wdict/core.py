@@ -15,6 +15,7 @@ import numpy as np
 import copy
 import traceback
 from itertools import repeat
+import re
 from collections import OrderedDict
 from logging import getLogger
 
@@ -25,8 +26,26 @@ class Dict(OrderedDict):
         super(Dict, self).__init__(*args, **kwargs)
         self.__dict__ = self
         for key in self.keys():
+            # new_key = re.sub("[^a-zA-Z0-9_]", "", key.replace(" ", "_"))
+            # if str.isalpha(new_key[0]):
+            #     if new_key == key or new_key not in self.keys():
+            #         self.__dict__[new_key] = self[key]
             if isinstance(self[key], dict):
                 self[key] = Dict(self[key])
+        if "force_ndarray" in kwargs:
+            if kwargs["force_ndarray"]:
+                self.list_to_ndarray()
+
+    def list_to_ndarray(self, keys: list=None, excludes: list=None):
+        if keys is None:
+            keys = self.keys()
+        if excludes is None:
+            excludes = []
+        for key in keys:
+            if key in excludes or key not in self.keys():
+                continue
+            if isinstance(self[key], list):
+                self[key] = np.array(self[key])
 
     def __str__(self):
         ret = ""

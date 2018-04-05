@@ -1,3 +1,5 @@
+import sys
+sys.path.append("../")
 from wdict import Dict as dict
 import numpy as np
 from logging import basicConfig, DEBUG
@@ -171,3 +173,13 @@ def test_str_int_list_update():
     assert d["b"]["c"]["d"] == 1
     assert d.a == ["str 0", 8, 9, 0]
     assert d.b.c.d == 1
+
+
+def test_list_to_ndarray():
+    a = dict(a=[0, 1])
+    a.list_to_ndarray()
+    b = dict(a=[0, 1], force_ndarray=True)
+    assert a.a.tolist() == [0, 1]
+    assert a["a"].tolist() == [0, 1]
+    assert b.a.tolist() == [0, 1]
+    assert b["a"].tolist() == [0, 1]
