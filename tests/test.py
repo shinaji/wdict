@@ -183,3 +183,17 @@ def test_list_to_ndarray():
     assert a["a"].tolist() == [0, 1]
     assert b.a.tolist() == [0, 1]
     assert b["a"].tolist() == [0, 1]
+
+def test_ndarray_to_list():
+    a = dict(a=np.array([0, 1]))
+    a.ndarray_to_list()
+    b = dict(a=[0, 1], force_ndarray=True)
+    b.ndarray_to_list()
+    assert isinstance(a.a, list)
+    assert isinstance(a["a"], list)
+    assert isinstance(b.a, list)
+    assert isinstance(b["a"], list)
+    assert a.a == [0, 1]
+    assert a["a"] == [0, 1]
+    assert b.a == [0, 1]
+    assert b["a"] == [0, 1]

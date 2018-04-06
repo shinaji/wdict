@@ -47,6 +47,17 @@ class Dict(OrderedDict):
             if isinstance(self[key], list):
                 self[key] = np.array(self[key])
 
+    def ndarray_to_list(self, keys: list = None, excludes: list = None):
+        if keys is None:
+            keys = self.keys()
+        if excludes is None:
+            excludes = []
+        for key in keys:
+            if key in excludes or key not in self.keys():
+                continue
+            if isinstance(self[key], np.ndarray):
+                self[key] = self[key].tolist()
+
     def __str__(self):
         ret = ""
         for key in self.keys():

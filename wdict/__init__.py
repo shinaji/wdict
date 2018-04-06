@@ -11,5 +11,5 @@
     Date: 2018/03/01
 
 """
-__version__ = "0.1.3"
+__version__ = "0.1.4"
 from .core import Dict
