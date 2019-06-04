@@ -6,6 +6,20 @@ from logging import basicConfig, DEBUG
 basicConfig(level=DEBUG)
 
 
+def test_where_in():
+    a = dict({"a": 1, "b": {"child": [0, 1, 2]}})
+    b = a.where("child", "in", 1)
+    assert len(b.keys()) == 1
+    assert list(b.keys())[0] == "b"
+
+
+def test_where_in():
+    a = dict({"a": 1, "b": {"child": [0, 1, 2]}})
+    b = a.where("child", "not in", 5)
+    assert len(b.keys()) == 1
+    assert list(b.keys())[0] == "b"
+
+
 def test_where_eq():
     a = dict({"a": 1, "b": {"child": 1}})
     b = a.where("child", "==", 1)

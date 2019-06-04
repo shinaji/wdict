@@ -62,66 +62,39 @@ class Dict(OrderedDict):
         """
         filter dict based on child value
         :param child_key: target child key
-        :param op: operator (supporting "==", ">=", "<=", ">", "<", "!=")
+        :param op: operator (supporting "==", ">=", "<=", ">", "<", "!=",
+                             "in", "not in")
         :param value: value
         :return: filtered dict
         """
-        if op not in ["==", ">=", "<=", "!=", "<", ">"]:
+        if op not in ["==", ">=", "<=", "!=", "<", ">", "in", "not in"]:
             raise KeyError(f"Unknown operator was given. {op}")
+
         if op == "==":
-            return Dict(
-                {
-                    key: self[key] for key in self.keys()
-                    if (hasattr(self[key], "keys") and
-                        child_key in self[key].keys() and
-                        self[key][child_key] == value)
-                }
-            )
+            comp_func = lambda child_value, given_value: child_value == given_value
         elif op == ">":
-            return Dict(
-                {
-                    key: self[key] for key in self.keys()
-                    if (hasattr(self[key], "keys") and
-                        child_key in self[key].keys() and
-                        self[key][child_key] > value)
-                }
-            )
+            comp_func = lambda child_value, given_value: child_value > given_value
         elif op == "<":
-            return Dict(
-                {
-                    key: self[key] for key in self.keys()
-                    if (hasattr(self[key], "keys") and
-                        child_key in self[key].keys() and
-                        self[key][child_key] < value)
-                }
-            )
+            comp_func = lambda child_value, given_value: child_value < given_value
         elif op == ">=":
-            return Dict(
-                {
-                    key: self[key] for key in self.keys()
-                    if (hasattr(self[key], "keys") and
-                        child_key in self[key].keys() and
-                        self[key][child_key] >= value)
-                }
-            )
+            comp_func = lambda child_value, given_value: child_value >= given_value
         elif op == "<=":
-            return Dict(
-                {
-                    key: self[key] for key in self.keys()
-                    if (hasattr(self[key], "keys") and
-                        child_key in self[key].keys() and
-                        self[key][child_key] <= value)
-                }
-            )
+            comp_func = lambda child_value, given_value: child_value <= given_value
         elif op == "!=":
-            return Dict(
-                {
-                    key: self[key] for key in self.keys()
-                    if (hasattr(self[key], "keys") and
-                        child_key in self[key].keys() and
-                        self[key][child_key] != value)
-                }
-            )
+            comp_func = lambda child_value, given_value: child_value != given_value
+        elif op == "in":
+            comp_func = lambda child_value, given_value: given_value in child_value
+        elif op == "not in":
+            comp_func = lambda child_value, given_value:  given_value not in child_value
+
+        return Dict(
+            {
+                key: self[key] for key in self.keys()
+                if (hasattr(self[key], "keys") and
+                    child_key in self[key].keys() and
+                    comp_func(self[key][child_key], value))
+            }
+        )
 
     def __str__(self):
         ret = ""
