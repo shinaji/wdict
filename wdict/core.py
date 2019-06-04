@@ -58,6 +58,71 @@ class Dict(OrderedDict):
             if isinstance(self[key], np.ndarray):
                 self[key] = self[key].tolist()
 
+    def where(self, child_key, op: str, value):
+        """
+        filter dict based on child value
+        :param child_key: target child key
+        :param op: operator (supporting "==", ">=", "<=", ">", "<", "!=")
+        :param value: value
+        :return: filtered dict
+        """
+        if op not in ["==", ">=", "<=", "!=", "<", ">"]:
+            raise KeyError(f"Unknown operator was given. {op}")
+        if op == "==":
+            return Dict(
+                {
+                    key: self[key] for key in self.keys()
+                    if (hasattr(self[key], "keys") and
+                        child_key in self[key].keys() and
+                        self[key][child_key] == value)
+                }
+            )
+        elif op == ">":
+            return Dict(
+                {
+                    key: self[key] for key in self.keys()
+                    if (hasattr(self[key], "keys") and
+                        child_key in self[key].keys() and
+                        self[key][child_key] > value)
+                }
+            )
+        elif op == "<":
+            return Dict(
+                {
+                    key: self[key] for key in self.keys()
+                    if (hasattr(self[key], "keys") and
+                        child_key in self[key].keys() and
+                        self[key][child_key] < value)
+                }
+            )
+        elif op == ">=":
+            return Dict(
+                {
+                    key: self[key] for key in self.keys()
+                    if (hasattr(self[key], "keys") and
+                        child_key in self[key].keys() and
+                        self[key][child_key] >= value)
+                }
+            )
+        elif op == "<=":
+            return Dict(
+                {
+                    key: self[key] for key in self.keys()
+                    if (hasattr(self[key], "keys") and
+                        child_key in self[key].keys() and
+                        self[key][child_key] <= value)
+                }
+            )
+        elif op == "!=":
+            return Dict(
+                {
+                    key: self[key] for key in self.keys()
+                    if (hasattr(self[key], "keys") and
+                        child_key in self[key].keys() and
+                        self[key][child_key] != value)
+                }
+            )
+
     def __str__(self):
         ret = ""
         for key in self.keys():

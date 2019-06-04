@@ -5,6 +5,63 @@ import numpy as np
 from logging import basicConfig, DEBUG
 basicConfig(level=DEBUG)
 
+
+def test_where_eq():
+    a = dict({"a": 1, "b": {"child": 1}})
+    b = a.where("child", "==", 1)
+    assert len(b.keys()) == 1
+    assert list(b.keys())[0] == "b"
+
+
+def test_where_neq():
+    a = dict({"a": 1, "b": {"child": 1}})
+    b = a.where("child", "!=", 1)
+    assert len(b.keys()) == 0
+
+    a = dict({"a": 1, "b": {"child": 1}})
+    b = a.where("child", "!=", 0)
+    assert len(b.keys()) == 1
+    assert list(b.keys())[0] == "b"
+
+
+def test_where_gt():
+    a = dict({"a": 1, "b": {"child": 1}})
+    b = a.where("child", ">", 0)
+    assert len(b.keys()) == 1
+    assert list(b.keys())[0] == "b"
+
+    a = dict({"a": 1, "b": {"child": 1}})
+    b = a.where("child", ">", 1)
+    assert len(b.keys()) == 0
+
+
+def test_where_lt():
+    a = dict({"a": 1, "b": {"child": 1}})
+    b = a.where("child", "<", 2)
+    assert len(b.keys()) == 1
+    assert list(b.keys())[0] == "b"
+
+    a = dict({"a": 1, "b": {"child": 1}})
+    b = a.where("child", "<", 1)
+    assert len(b.keys()) == 0
+
+
+def test_where_gteq():
+    a = dict({"a": 1, "b": {"child": 1}})
+    b = a.where("child", ">=", 1)
+    b = b.where("child", ">=", 0)
+    assert len(b.keys()) == 1
+    assert list(b.keys())[0] == "b"
+
+
+def test_where_lteq():
+    a = dict({"a": 1, "b": {"child": 1}})
+    b = a.where("child", "<=", 1)
+    b = b.where("child", "<=", 2)
+    assert len(b.keys()) == 1
+    assert list(b.keys())[0] == "b"
+
+
 def test_mul():
     a = dict({"a": 1})
     b = list(a * 2)
@@ -22,6 +79,7 @@ def test_sum():
     assert c["b"] == 2
     assert c.a == [1, 2]
     assert c.b == 2
+
 
 def test_int_int():
     a = dict({"a": 1})
@@ -41,7 +99,6 @@ def test_float_float():
     assert c["b"] == 2.0
     assert c.a == [1.0, 2.0]
     assert c.b == 2.0
-
 
 
 def test_float_int():
@@ -183,6 +240,7 @@ def test_list_to_ndarray():
     assert a["a"].tolist() == [0, 1]
     assert b.a.tolist() == [0, 1]
     assert b["a"].tolist() == [0, 1]
+
 
 def test_ndarray_to_list():
     a = dict(a=np.array([0, 1]))

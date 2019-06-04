@@ -9,6 +9,7 @@ pip install --upgrade wdict
 
 # Features
 * Concatenate dicts with "+" operator
+* Filter dicts based on its child value by "where" method 
 * Attribute-style access
 
 # Usage
@@ -26,6 +27,10 @@ Dict([('a', [1, 2]), ('b', 2)])
 [1, 2]
 >>> (a + b)["a"]
 [1, 2]
+
+>>> a = dict({"a": 1, "b": {"child": 1}}) 
+>>> a.where("child", "==", 1)
+Dict([('b', Dict([('child', 1)]))])
 
 >>> a = dict({"a": {"c": 1}}) 
 >>> b = dict({"a": {"d": 2}})
