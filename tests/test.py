@@ -6,6 +6,34 @@ from logging import basicConfig, DEBUG
 basicConfig(level=DEBUG)
 
 
+def test_exclude():
+    a = dict({"a": 2, "b": 2, "c": 2})
+    a = a.exclude(["b"])
+    assert len(a.keys()) == 2
+    assert len([key for key in a.keys() if key in ["a", "c"]]) == 2
+
+    a = a.exclude(["F"])
+    assert len(a.keys()) == 2
+    assert len([key for key in a.keys() if key in ["a", "c"]]) == 2
+
+    a = dict({"a": 2, "b": 2, "c": 2})
+    a = a.exclude(["b", "c"])
+    assert len(a.keys()) == 1
+    assert list(a.keys())[0] == "a"
+
+
+def test_want():
+    a = dict({"a": 2, "b": 2, "c": 2})
+    a = a.want(["a", "c"])
+    assert len(a.keys()) == 2
+    assert len([key for key in a.keys() if key in ["a", "c"]]) == 2
+
+    a = dict({"a": 2, "b": 2, "c": 2})
+    a = a.want(["a"])
+    assert len(a.keys()) == 1
+    assert list(a.keys())[0] == "a"
+
+
 def test_where_in():
     a = dict({"a": 1, "b": {"child": [0, 1, 2]}})
     b = a.where("child", "in", 1)

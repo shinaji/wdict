@@ -23,6 +23,9 @@ from logging import getLogger
 class Dict(OrderedDict):
 
     def __init__(self, *args, **kwargs):
+        """
+        init
+        """
         super(Dict, self).__init__(*args, **kwargs)
         self.__dict__ = self
         for key in self.keys():
@@ -32,11 +35,18 @@ class Dict(OrderedDict):
             #         self.__dict__[new_key] = self[key]
             if isinstance(self[key], dict):
                 self[key] = Dict(self[key])
+        # convert list to ndarray
         if "force_ndarray" in kwargs:
             if kwargs["force_ndarray"]:
                 self.list_to_ndarray()
 
     def list_to_ndarray(self, keys: list=None, excludes: list=None):
+        """
+        convert list to ndarray
+        :param keys: target keys, apply to all list elements in default
+        :param excludes: excluding keys
+        :return:
+        """
         if keys is None:
             keys = self.keys()
         if excludes is None:
@@ -48,6 +58,12 @@ class Dict(OrderedDict):
                 self[key] = np.array(self[key])
 
     def ndarray_to_list(self, keys: list = None, excludes: list = None):
+        """
+        convert ndarray element to list
+        :param keys: target keys, apply to all ndarray elements in default
+        :param excludes: excluding keys
+        :return:
+        """
         if keys is None:
             keys = self.keys()
         if excludes is None:
@@ -57,6 +73,26 @@ class Dict(OrderedDict):
                 continue
             if isinstance(self[key], np.ndarray):
                 self[key] = self[key].tolist()
+
+    def exclude(self, ignores):
+        """
+        exclude given keys
+        :param ignores: ignores
+        :return: Dict
+        """
+        return Dict({
+            key: self[key] for key in self.keys() if key not in ignores
+        })
+
+    def want(self, target_keys):
+        """
+        exclude keys which are not included in target keys
+        :param target_keys: target keys
+        :return: Dict
+        """
+        return Dict({
+            key: self[key] for key in self.keys() if key in target_keys
+        })
 
     def where(self, child_key, op: str, value):
         """
