@@ -6,6 +6,200 @@ from logging import basicConfig, DEBUG
 basicConfig(level=DEBUG)
 
 
+def test_extract_child():
+    a = dict({
+        "a": {
+            "1": {
+                "2": {
+                    "3": "A",
+                    "33": "A"
+                }
+            }
+        },
+        "b": {
+            "1": {
+                "2": {
+                    "3": "A",
+                    "33": "A"
+                }
+            }
+        },
+        "c": {
+            "1": {
+                "2c": {
+                    "3": "C",
+                    "33": "A"
+                }
+            }
+        },
+        "d": {
+            "1": {
+                "2d": {
+                    "3": "D",
+                    "33": "A"
+                }
+            }
+        }
+    })
+    # print(a.extract_child("1/2/3"))
+    assert len([key for key in a.extract_child("1/2/3").keys()
+                if key in ["a", "b"]]) == 2
+    assert len([key for key in a.extract_child("1/*/3").keys()
+                if key in ["a", "b", "c", "d"]]) == 4
+
+
+def test_get_keys():
+    a = dict({
+        "a": {
+            "1": {
+                "2": {
+                    "3": "A"
+                }
+            }
+        },
+        "b": {
+            "1": {
+                "2": {
+                    "3": "A"
+                }
+            }
+        },
+        "c": {
+            "1": {
+                "2": {
+                    "3": "C"
+                }
+            }
+        },
+        "d": {
+            "1": {
+                "22": {
+                    "33": "D"
+                }
+            }
+        }
+    })
+    assert len(list(a.get_child_keys("1/2/3"))) == 0
+    assert list(a.get_child_keys("1/2")) == ["3"]
+    assert list(a.get_child_keys("1")) == ["2", "22"] or \
+           list(a.get_child_keys("1")) == ["2", "22"][::-1]
+    assert list(a.get_child_keys()) == ["1"]
+
+
+def test_drop():
+    a = dict({
+        "a": {
+            "1": {
+                "2": {
+                    "3": "A"
+                }
+            }
+        },
+        "b": {
+            "1": {
+                "2": {
+                    "3": "A"
+                }
+            }
+        },
+        "c": {
+            "1": {
+                "2": {
+                    "3": "C"
+                }
+            }
+        }
+    })
+    b = a.drop(0)
+    assert b["1"]["2"]["3"] == ["A", "A", "C"]
+    b = a.drop(1)
+    b = b.where("2/3", "in", ["A"])
+    assert len([key for key in b.keys() if key in ["a", "b"]]) == 2
+    b = a.drop(2)
+    b = b.where("1/3", "in", ["C"])
+    assert len(b.keys()) == 1
+    assert list(b.keys())[0] == "c"
+    a = dict({
+        "a": {
+            "1": {
+                "2": {
+                    "3": "A"
+                }
+            }
+        },
+        "b": {
+            "1": {
+                "2": {
+                    "3": "A"
+                }
+            },
+            "11": {
+                "2": {
+                    "3": "A"
+                }
+            }
+        },
+        "c": {
+            "1": {
+                "2": {
+                    "3": "C"
+                }
+            }
+        }
+    })
+    b = a.drop(1)
+    b = b.where("2/3", "has", "A")
+    assert len([key for key in b.keys() if key in ["a", "b"]]) == 2
+
+
+def test_has_child():
+    a = dict({"a": {"child": 1}, "b": {"son": 1},
+              "c": {
+                  "daughter": {
+                      "g_daughter": {
+                            "gg_daughter": 1
+                        }}}})
+    b = a.has_child("son")
+    assert len(b.keys()) == 1
+    assert list(b.keys())[0] == "b"
+
+    b = a.has_child("*/g_daughter/gg_daughter")
+    assert len(b.keys()) == 1
+    assert list(b.keys())[0] == "c"
+
+    b = a.has_child("*/*/*")
+    assert len(b.keys()) == 1
+    assert list(b.keys())[0] == "c"
+
+    b = a.has_child("daughter/g_daughter/gg_daughter")
+    assert len(b.keys()) == 1
+    assert list(b.keys())[0] == "c"
+
+    a = dict({"a": {"child": 1}, "b": {"son": 1}})
+    b = a.has_child("*")
+    assert len(b.keys()) == 2
+    assert len([key for key in b.keys() if key in ["a", "b"]]) == 2
+
+    a = dict({
+        "a": {"child": {"g_child": 1}},
+        "b": {"son": {"g_daughter": {"gg_son": 1}}},
+        "c": {"daughter": {"g_daughter": {"gg_daughter": 1}}}
+    })
+
+    b = a.has_child("*")
+    assert len(b.keys()) == 3
+
+    b = a.has_child("*/g_daughter")
+    assert len(b.keys()) == 2
+    assert len([key for key in b.keys() if key in ["b", "c"]]) == 2
+
+    b = a.has_child("*/*/gg_son")
+    assert len(b.keys()) == 1
+    assert list(b.keys())[0] == "b"
+
+
+
+
 def test_exclude():
     a = dict({"a": 2, "b": 2, "c": 2})
     a = a.exclude(["b"])
@@ -22,28 +216,92 @@ def test_exclude():
     assert list(a.keys())[0] == "a"
 
 
-def test_want():
+def test_extract():
     a = dict({"a": 2, "b": 2, "c": 2})
-    a = a.want(["a", "c"])
+    a = a.extract(["a", "c"])
     assert len(a.keys()) == 2
     assert len([key for key in a.keys() if key in ["a", "c"]]) == 2
 
     a = dict({"a": 2, "b": 2, "c": 2})
-    a = a.want(["a"])
+    a = a.extract(["a"])
     assert len(a.keys()) == 1
     assert list(a.keys())[0] == "a"
 
 
 def test_where_in():
+    a = dict({"a": {"child": 1},
+              "b": {"child": [0, 1, 2]},
+              "c": {"child": "A"}
+              })
+    b = a.where("child", "in", ["A", 1])
+    assert len(b.keys()) == 2
+    assert len([key for key in b.keys() if key in ["a", "c"]]) == 2
+
+    a = dict({"a": {"child": 1},
+              "b": {"child": [0, 1, 2]},
+              "c": {"child": "A"}
+              })
+    b = a.where("child", "in", "A")
+    assert len(b.keys()) == 1
+    assert len([key for key in b.keys() if key in ["c"]]) == 1
+
+
+def test_where_not_in():
+    a = dict({"a": {"child": 1},
+              "b": {"child": [0, 1, 2]},
+              "c": {"child": "A"}
+              })
+    b = a.where("child", "not in", ["A", 1])
+    assert len(b.keys()) == 1
+    assert len([key for key in b.keys() if key in ["b"]]) == 1
+
+    a = dict({"a": {"child": 1},
+              "b": {"child": [0, 1, 2]},
+              "c": {"child": "A"}
+              })
+    b = a.where("child", "not in", "A")
+    assert len(b.keys()) == 2
+    assert len([key for key in b.keys() if key in ["a", "b"]]) == 2
+
+    a = dict({"a": {"child": 1},
+              "b": {"child": [0, 1, 2]},
+              "c": {"child": "A"}
+              })
+    b = a.where("child", "not in", [1])
+    assert len(b.keys()) == 2
+    assert len([key for key in b.keys() if key in ["b", "c"]]) == 2
+
+
+def test_where_does_not_have():
+    a = dict({"a": {"child": 1},
+              "b": {"child": [0, 1, 2]},
+              "c": {"child": "1"}
+              })
+    b = a.where("child", "does not have", 1)
+    assert len(b.keys()) == 2
+    assert len([key for key in b.keys() if key in ["a", "c"]]) == 2
+
+    a = dict({"a": {"child1": "1"},
+              "b": {"child2": {"g_child": [0]}},
+              "bb": {"child2": {"g_child": [5]}},
+              "c": {"child3": [5]},
+              })
+    b = a.where("*/g_child", "does not have", 5)
+    assert len(b.keys()) == 1
+    assert len([key for key in b.keys() if key in ["b"]]) == 1
+
+
+def test_where_has():
     a = dict({"a": 1, "b": {"child": [0, 1, 2]}})
-    b = a.where("child", "in", 1)
+    b = a.where("child", "has", 1)
     assert len(b.keys()) == 1
     assert list(b.keys())[0] == "b"
 
-
-def test_where_in():
-    a = dict({"a": 1, "b": {"child": [0, 1, 2]}})
-    b = a.where("child", "not in", 5)
+    a = dict({"a": 1,
+              "b": {"child": [0, 1, 2, 5]},
+              "bb": {"child": [0, 1, 2]}
+              })
+    b = a.where("child", "has", 5)
     assert len(b.keys()) == 1
     assert list(b.keys())[0] == "b"
 

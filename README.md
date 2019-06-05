@@ -10,7 +10,8 @@ pip install --upgrade wdict
 # Features
 * Concatenate dicts with "+" operator
 * Filter dicts based on its child value by "where" method 
-* Filter dicts based on its keys by "exclude" and "want" method 
+* Filter dicts based on its keys by "has_child"", "exclude" and "extract" method
+* Drop 
 * Attribute-style access
 
 # Usage
