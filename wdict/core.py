@@ -320,7 +320,7 @@ class Dict(OrderedDict):
                         ret.update({
                             key: candidate
                         })
-            return ret
+            return Dict(ret)
 
     def __str__(self):
         ret = ""
