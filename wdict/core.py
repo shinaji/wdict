@@ -139,6 +139,8 @@ class Dict(OrderedDict):
 
         return ret.has_child(child_key)
 
+    
+
     def has_child(self, child_key):
         """
         exclude elements which does not have the given child key
@@ -308,16 +310,17 @@ class Dict(OrderedDict):
         else:
             depth = child_key.split("/")
             self.__check_n_recursion(len(depth))
-            return Dict(
-                {
-                    key: self[key] for key in self.keys()
-                    if (hasattr(self[key], "keys") and
-                        (depth[0] == "*" or depth[0] in self[key].keys()) and
-                        len(Dict(self[key]).where(
-                            "/".join(depth[1::]), op, value).keys()) > 0
-                        )
-                }
-            )
+            ret = {}
+            for key in self.keys():
+                if hasattr(self[key], "keys"):
+                    candidate = Dict(
+                        self[key]).where("/".join(depth[1::]), op, value)
+                    if((depth[0] == "*" or depth[0] in self[key].keys()) and
+                            len(candidate.keys()) > 0):
+                        ret.update({
+                            key: candidate
+                        })
+            return ret
 
     def __str__(self):
         ret = ""

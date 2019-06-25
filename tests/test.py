@@ -307,8 +307,12 @@ def test_where_has():
 
 
 def test_where_eq():
-    a = dict({"a": 1, "b": {"child": 1}})
-    b = a.where("child", "==", 1)
+    a = dict({
+        "a": 1,
+        "b": {"child": {"gchild": 1, "a": 1}, "son": {"gchild": 0}},
+        "c": {"child": 1}})
+    b = a.where("*/gchild", "==", 1)
+    print(b)
     assert len(b.keys()) == 1
     assert list(b.keys())[0] == "b"
 
@@ -325,7 +329,7 @@ def test_where_neq():
 
 
 def test_where_gt():
-    a = dict({"a": 1, "b": {"child": 1}})
+    a = dict({"a": 1, "b": {"child": 1, "son": 1}})
     b = a.where("child", ">", 0)
     assert len(b.keys()) == 1
     assert list(b.keys())[0] == "b"
