@@ -177,7 +177,7 @@ class Dict(OrderedDict):
         :return:
         """
         ret = [
-            Dict(target_dict[key])
+            target_dict[key]
             for key in target_dict.keys()
             if hasattr(target_dict[key], "keys")]
         return sum(ret)
@@ -193,7 +193,7 @@ class Dict(OrderedDict):
         self.__check_n_recursion(depth)
         new_dict = {}
         for key in self.keys():
-            new_dict.update({key: Dict(self[key]).drop(depth-1)})
+            new_dict.update({key: self[key].drop(depth-1)})
         return Dict(new_dict)
 
     def get_child_keys(self, path: str = None):
