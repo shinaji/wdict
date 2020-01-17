@@ -36,7 +36,7 @@ class Dict(OrderedDict):
             # if str.isalpha(new_key[0]):
             #     if new_key == key or new_key not in self.keys():
             #         self.__dict__[new_key] = self[key]
-            if isinstance(self[key], dict):
+            if type(self[key]) == dict:
                 self[key] = Dict(self[key])
         # convert list to ndarray
         if "force_ndarray" in kwargs:
