@@ -177,10 +177,13 @@ class Dict(OrderedDict):
         :return:
         """
         ret = [
-            target_dict[key]
+            copy.deepcopy(target_dict[key])
             for key in target_dict.keys()
             if hasattr(target_dict[key], "keys")]
-        return sum(ret)
+        new_dict = Dict()
+        for tmp in ret:
+            new_dict += tmp
+        return new_dict
 
     def drop(self, depth: int):
         """
