@@ -306,6 +306,75 @@ def test_where_has():
     assert list(b.keys())[0] == "b"
 
 
+def test_where_has_any():
+    a = dict({"a": 1, "b": {"child": {"a": 1, "b": 2, "c": 3}}})
+    b = a.where("child", "has any", ["a", "d"])
+    assert len(b.keys()) == 1
+    assert list(b.keys())[0] == "b"
+
+    a = dict({"a": 1,
+              "b": {"child": {"a": 1, "b": 2, "c": 3}},
+              "bb": {"child": {"e": 1, "f": 2, "g": 3}}
+              })
+    b = a.where("child", "has any", ["a", "d"])
+    assert len(b.keys()) == 1
+    assert list(b.keys())[0] == "b"
+
+
+def test_where_does_not_have_any():
+    a = dict({"a": 1, "b": {"child": {"a": 1, "b": 2, "c": 3}}})
+    b = a.where("child", "does not have any", ["a", "d"])
+    assert len(b.keys()) == 0
+
+    a = dict({"a": 1,
+              "b": {"child": {"a": 1, "b": 2, "c": 3}},
+              "c": {"child": {"e": 1, "f": 2, "g": 3}}
+              })
+    b = a.where("child", "does not have any", ["a", "d"])
+    assert len(b.keys()) == 1
+    assert list(b.keys())[0] == "c"
+
+    a = dict({"a": 1,
+              "b": {"child": {"a": 1, "b": 2, "c": 3}},
+              "bb": {"child": {"a": 1, "b": 2, "d": 3}}
+              })
+    b = a.where("child", "does not have any", ["a", "d"])
+    assert len(b.keys()) == 0
+
+
+def test_where_has_all():
+    a = dict({"a": 1, "b": {"child": {"a": 1, "b": 2, "c": 3}}})
+    b = a.where("child", "has all", ["a", "d"])
+    assert len(b.keys()) == 0
+
+    a = dict({"a": 1,
+              "b": {"child": {"a": 1, "b": 2, "c": 3}},
+              "bb": {"child": {"e": 1, "f": 2, "g": 3}}
+              })
+    b = a.where("child", "has all", ["a", "c"])
+    assert len(b.keys()) == 1
+    assert list(b.keys())[0] == "b"
+
+
+def test_where_does_not_have_all():
+    a = dict({"a": 1, "b": {"child": {"a": 1, "b": 2, "c": 3}}})
+    b = a.where("child", "does not have all", ["a", "d"])
+    assert len(b.keys()) == 1
+    assert list(b.keys())[0] == "b"
+
+    a = dict({"a": 1, "b": {"child": {"a": 1, "b": 2, "c": 3, "d": 4}}})
+    b = a.where("child", "does not have all", ["a", "d"])
+    assert len(b.keys()) == 0
+
+    a = dict({"a": 1,
+              "b": {"child": {"a": 1, "b": 2, "c": 3}},
+              "bb": {"child": {"e": 1, "f": 2, "g": 3}}
+              })
+    b = a.where("child", "does not have all", ["a", "c"])
+    assert len(b.keys()) == 1
+    assert list(b.keys())[0] == "bb"
+
+
 def test_where_eq():
     a = dict({
         "a": 1,

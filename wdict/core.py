@@ -255,7 +255,7 @@ class Dict(OrderedDict):
     def __where_has_any_helper(child_value, given_value):
         try:
             return isinstance(child_value, Iterable) and \
-                any([elem in given_value for elem in child_value])
+                any([elem in child_value for elem in given_value])
         except TypeError:
             return False
 
@@ -266,7 +266,7 @@ class Dict(OrderedDict):
     def __where_has_all_helper(child_value, given_value):
         try:
             return isinstance(child_value, Iterable) and \
-                   all([elem in given_value for elem in child_value])
+                   all([elem in child_value for elem in given_value])
         except TypeError:
             return False
 
