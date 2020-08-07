@@ -248,14 +248,30 @@ class Dict(OrderedDict):
         except TypeError:
             return False
 
+    def __where_does_not_have_helper(self, child_value, given_value):
+        return not self.__where_has_helper(child_value, given_value)
+
     @staticmethod
-    def __where_does_not_have_helper(child_value, given_value):
+    def __where_has_any_helper(child_value, given_value):
         try:
-            if not isinstance(child_value, Iterable):
-                True
-            return given_value not in child_value
+            return isinstance(child_value, Iterable) and \
+                any([elem in given_value for elem in child_value])
         except TypeError:
-            return True
+            return False
+
+    def __where_does_not_have_any_helper(self, child_value, given_value):
+        return not self.__where_has_any_helper(child_value, given_value)
+
+    @staticmethod
+    def __where_has_all_helper(child_value, given_value):
+        try:
+            return isinstance(child_value, Iterable) and \
+                   all([elem in given_value for elem in child_value])
+        except TypeError:
+            return False
+
+    def __where_does_not_have_all_helper(self, child_value, given_value):
+        return not self.__where_has_all_helper(child_value, given_value)
 
     def where(self, child_key, op: str, value):
         """
@@ -267,7 +283,10 @@ class Dict(OrderedDict):
         :return: filtered dict
         """
         if op not in ["==", ">=", "<=", "!=", "<", ">",
-                      "in", "not in", "has", "does not have"]:
+                      "in", "not in", "has", "does not have"
+                      "has any", "does not have any",
+                      "has all", "does not have all"
+                      ]:
             raise KeyError(f"Unknown operator was given. {op}")
 
         if op == "==":
@@ -294,6 +313,14 @@ class Dict(OrderedDict):
             comp_func = self.__where_has_helper
         elif op == "does not have":
             comp_func = self.__where_does_not_have_helper
+        elif op == "has any":
+            comp_func = self.__where_has_any_helper
+        elif op == "has all":
+            comp_func = self.__where_has_all_helper
+        elif op == "does not have any":
+            comp_func = self.__where_does_not_have_any_helper
+        elif op == "does not have all":
+            comp_func = self.__where_does_not_have_all_helper
 
         if "/" not in child_key:
             if child_key == "*":
