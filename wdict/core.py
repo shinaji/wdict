@@ -283,7 +283,7 @@ class Dict(OrderedDict):
         :return: filtered dict
         """
         if op not in ["==", ">=", "<=", "!=", "<", ">",
-                      "in", "not in", "has", "does not have"
+                      "in", "not in", "has", "does not have",
                       "has any", "does not have any",
                       "has all", "does not have all"
                       ]:
