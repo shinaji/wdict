@@ -273,6 +273,14 @@ class Dict(OrderedDict):
     def __where_does_not_have_all_helper(self, child_value, given_value):
         return not self.__where_has_all_helper(child_value, given_value)
 
+    @staticmethod
+    def __where_subset_of_helper(child_value, given_value):
+        try:
+            return isinstance(child_value, Iterable) and \
+                   all([elem in given_value for elem in child_value])
+        except TypeError:
+            return False
+
     def where(self, child_key, op: str, value):
         """
         filter dict based on child value
@@ -285,7 +293,8 @@ class Dict(OrderedDict):
         if op not in ["==", ">=", "<=", "!=", "<", ">",
                       "in", "not in", "has", "does not have",
                       "has any", "does not have any",
-                      "has all", "does not have all"
+                      "has all", "does not have all",
+                      "subset of"
                       ]:
             raise KeyError(f"Unknown operator was given. {op}")
 
@@ -321,6 +330,8 @@ class Dict(OrderedDict):
             comp_func = self.__where_does_not_have_any_helper
         elif op == "does not have all":
             comp_func = self.__where_does_not_have_all_helper
+        elif op == "subset of":
+            comp_func = self.__where_subset_of_helper
 
         if "/" not in child_key:
             if child_key == "*":
