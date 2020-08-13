@@ -375,6 +375,25 @@ def test_where_does_not_have_all():
     assert list(b.keys())[0] == "bb"
 
 
+def test_where_subset_of():
+    a = dict({"a": 1, "b": {"child": {"a": 1, "b": 2, "c": 3}}})
+    b = a.where("child", "subset of", ["a", "b", "c", "d"])
+    assert len(b.keys()) == 1
+    assert list(b.keys())[0] == "b"
+
+    a = dict({"a": 1, "b": {"child": {"a": 1, "b": 2, "c": 3, "d": 4}}})
+    b = a.where("child", "subset of", ["e", "f", "g"])
+    assert len(b.keys()) == 0
+
+    a = dict({"a": 1,
+              "b": {"child": {"a": 1, "b": 2, "c": 3}},
+              "bb": {"child": {"e": 1, "f": 2, "g": 3}}
+              })
+    b = a.where("child", "subset of", ["a", "b", "c", "e", "f"])
+    assert len(b.keys()) == 1
+    assert list(b.keys())[0] == "b"
+
+
 def test_where_eq():
     a = dict({
         "a": 1,
